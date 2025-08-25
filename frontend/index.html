@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Feedback Sentiment Analysis</title>
+</head>
+<body>
+  <h2>Feedback Sentiment Analysis</h2>
+
+  <form id="feedbackForm">
+    <textarea id="feedback" rows="4" cols="50" placeholder="Enter your feedback here"></textarea><br><br>
+    <button type="submit">Analyze</button>
+  </form>
+
+  <h3>Result:</h3>
+  <p id="result"></p>
+
+  <script>
+    document.getElementById("feedbackForm").addEventListener("submit", async function(event) {
+      event.preventDefault();
+  
+      const feedbackText = document.getElementById("feedback").value;
+      const feedbacks = feedbackText.split("\n").filter(f => f.trim() !== ""); // split by lines
+  
+      let results = "";
+  
+      for (let feedback of feedbacks) {
+        const response = await fetch("http://127.0.0.1:8000/analyze", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ feedback: feedback })
+        });
+  
+        const data = await response.json();
+        results += `Feedback: ${data.feedback}\nSentiment: ${data.sentiment}\nPolarity: ${data.polarity}\n\n`;
+      }
+  
+      document.getElementById("result").innerText = results;
+    });
+  </script>  
+</body>
+</html>
